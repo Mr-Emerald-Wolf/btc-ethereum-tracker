@@ -2,6 +2,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const { initTracker, startTracking } = require("./services/tracker_service");
 const { initTelegram, sendNotification } = require("./services/telegram_service");
+
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI, {
