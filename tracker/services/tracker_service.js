@@ -25,17 +25,14 @@ const startTracking = async (contractAddress) => {
         const blockNumber = event.blockNumber;
         const block = await provider.getBlock(blockNumber);
 
-        console.log(event);
+        console.log(`Event: ${event}`);
 
         for (const txHash of block.transactions) {
           // Check if the transaction interacts with the deposit contract
           tx = await provider.getTransaction(txHash);
 
           if (tx.to && tx.to.toLowerCase() === contractAddress.toLowerCase()) {
-            console.log(
-              `Transaction found for contract ${contractAddress}:`,
-              tx
-            );
+            console.log(`Transaction found for contract ${contractAddress}:`);
 
             // Process the transaction (you can define the actual logic for deposits)
             await processTransaction(tx, pubkey);
@@ -61,7 +58,7 @@ const processTransaction = async (tx, pubkey) => {
     });
 
     await newDeposit.save();
-    await sendNotification(tx.hash);
+    await sendNotification(`Transaction Hash for deposit: ${tx.hash}`);
     console.log("Deposit transaction saved:", tx.hash);
   } catch (error) {
     console.error("Error processing transaction:", error);

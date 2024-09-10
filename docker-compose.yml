@@ -6,10 +6,35 @@ services:
       - "27018:27017" 
     volumes:
       - mongo_data:/data/db 
+ 
+  exporter:
+    build: 
+      context: exporter
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+
   tracker:
     build: 
       context: tracker
     depends_on:
       - mongodb
+      - exporter
+    
+  prometheus:
+    build:
+      context: grafana
+      dockerfile: Dockerfile.prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+    depends_on:
+      - tracker
+      - exporter
+
 volumes:
-  mongo_data:
+  mongo_data: 
+  prometheus_data:
+  
