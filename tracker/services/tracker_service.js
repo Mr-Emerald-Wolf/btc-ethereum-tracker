@@ -1,5 +1,6 @@
 const { ethers } = require("ethers");
 const Deposit = require("../models/deposit");
+const { sendNotification } = require("./telegram_service");
 
 let provider, depositContract;
 
@@ -11,25 +12,10 @@ const initTracker = (rpcUrl, contractAddress, abi) => {
 // Start tracking block transactions related to the deposit contract
 const startTracking = async (contractAddress) => {
   try {
-    depositContract.on(
-      "DepositEvent",
-      async (
-        pubkey,
-        withdrawal_credentials,
-        amount,
-        signature,
-        index,
-        event
-      ) => {
-        const transactionHash = event.transactionHash;
-        const blockNumber = event.blockNumber;
-        const block = await provider.getBlock(blockNumber);
-        const blockTimestamp = block.timestamp;
+   
+        const block = await provider.getBlock(20716574);
 
-        console.log(`Processing transactions in block ${blockNumber}`);
-
-        // Iterate through transactions in the block
-        console.log(block.transactions);
+        console.log(`Processing transactions in event ${20716574}`);
 
         for (const txHash of block.transactions) {
           // Check if the transaction interacts with the deposit contract
@@ -42,38 +28,29 @@ const startTracking = async (contractAddress) => {
             );
 
             // Process the transaction (you can define the actual logic for deposits)
-            await processTransaction(tx, pubkey, amount);
+            await processTransaction(tx, "00");
           }
         }
-        console.log("New Deposit Detected:");
-        console.log("Transaction Hash:", transactionHash);
-        console.log("Block Number:", blockNumber);
-        console.log(
-          "Timestamp:",
-          new Date(blockTimestamp * 1000).toLocaleString()
-        );
-        console.log("Deposit Index:", index);
-        console.log("Amount (in gwei):", amount);
-      }
-    );
+       
   } catch (error) {
     console.error("Error tracking transactions:", error);
   }
 };
 
 // Logic to process the transaction
-const processTransaction = async (tx, pubkey, amount) => {
+const processTransaction = async (tx, pubkey) => {
   try {
     // Example: Save the transaction to the database
     const newDeposit = new Deposit({
       hash: tx.hash,
-      blockTimestamp: (await this.provider.getBlock(tx.blockNumber)).timestamp,
-      fee: amount, // ethers.js BigNumbers need to be converted to string
+      blockTimestamp: (await provider.getBlock(tx.blockNumber)).timestamp,
+      fee: Number(tx.value), // ethers.js BigNumbers need to be converted to string
       blockNumber: tx.blockNumber,
       pubkey: pubkey,
     });
 
     await newDeposit.save();
+    await sendNotification("Deposit transaction saved: " + tx.hash);
     console.log("Deposit transaction saved:", tx.hash);
   } catch (error) {
     console.error("Error processing transaction:", error);

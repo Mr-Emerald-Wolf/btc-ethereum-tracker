@@ -1,7 +1,7 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { initTracker, startTracking } = require("./services/tracker_service");
-
+const { initTelegram } = require("./services/telegram_service");
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -15,5 +15,10 @@ const ethereumRpcUrl = process.env.ETHEREUM_RPC_URL;
 const contractAddress = process.env.CONTRACT_ADDRESS;
 const abi = require("./abi.json");
 
+const botToken = process.env.BOT_TOKEN;
+const chatId = process.env.CHAT_ID;
+
+initTelegram(botToken, chatId);
 initTracker(ethereumRpcUrl, contractAddress, abi);
+
 startTracking(contractAddress);
