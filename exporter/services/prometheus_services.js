@@ -1,9 +1,10 @@
 const promClient = require("prom-client");
-const Deposit = require('../models/deposit'); // Ensure you import your model
+const Deposit = require("../models/deposit"); // Ensure you import your model
 
 let register;
 let latestBlockNumberGauge;
 let latestFeeGauge;
+let latestAmountGauge;
 let latestTimestampGauge;
 
 const initializeMetrics = () => {
@@ -20,6 +21,12 @@ const initializeMetrics = () => {
   latestFeeGauge = new promClient.Gauge({
     name: "latest_deposit_fee",
     help: "Fee of the latest deposit",
+    registers: [register],
+  });
+
+  latestAmountGauge = new promClient.Gauge({
+    name: "latest_deposit_amount",
+    help: "Amount of the latest deposit",
     registers: [register],
   });
 
@@ -41,8 +48,11 @@ const updateLatestDepositMetrics = async () => {
 
     if (latestDeposit) {
       latestBlockNumberGauge.set(latestDeposit.blockNumber); // Set block number gauge
-      latestFeeGauge.set(latestDeposit.fee); // Set fee gauge
-      latestTimestampGauge.set(Math.floor(new Date(latestDeposit.blockTimestamp).getTime() / 1000)); // Set timestamp gauge in seconds
+      latestAmountGauge.set(latestDeposit.amount); // Set amount gauge
+      latestFeeGauge.set(latestDeposit.fee);
+      latestTimestampGauge.set(
+        Math.floor(new Date(latestDeposit.blockTimestamp).getTime() / 1000)
+      ); // Set timestamp gauge in seconds
     }
   } catch (error) {
     console.error("Error updating latest deposit metrics:", error);
@@ -52,7 +62,9 @@ const updateLatestDepositMetrics = async () => {
 // Export function to return Prometheus metrics
 const getMetrics = async () => {
   if (!register) {
-    throw new Error("Metrics have not been initialized. Call initializeMetrics() first.");
+    throw new Error(
+      "Metrics have not been initialized. Call initializeMetrics() first."
+    );
   }
   return await register.metrics();
 };
