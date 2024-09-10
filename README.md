@@ -114,7 +114,7 @@ In addition to these custom metrics, it also collects default Node.js metrics pr
    MONGO_URI=mongodb://mongodb:27017
 
    # Ethereum RPC URL
-   ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID
+   ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/<YOUR_INFURA_API_KEY>
 
    # Contract Address
    CONTRACT_ADDRESS=0x00000000219ab540356cBB839Cbe05303d7705Fa
@@ -131,7 +131,7 @@ In addition to these custom metrics, it also collects default Node.js metrics pr
    MONGO_URI=mongodb://mongodb:27017
    ```
 
-   Replace `YOUR_INFURA_PROJECT_ID`, `YOUR_TELEGRAM_BOT_TOKEN`, and `YOUR_TELEGRAM_CHAT_ID` with your actual values.
+   Replace `YOUR_INFURA_API_KEY`, `YOUR_TELEGRAM_BOT_TOKEN`, and `YOUR_TELEGRAM_CHAT_ID` with your actual values.
 
 3. Build and start the services:
 
