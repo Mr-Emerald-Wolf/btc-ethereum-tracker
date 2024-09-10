@@ -48,7 +48,6 @@ const startTracking = async (contractAddress) => {
 // Logic to process the transaction
 const processTransaction = async (tx, pubkey) => {
   try {
-
     // Example: Save the transaction to the database
     const newDeposit = new Deposit({
       hash: tx.hash,
@@ -60,7 +59,18 @@ const processTransaction = async (tx, pubkey) => {
     });
 
     await newDeposit.save();
-    await sendNotification(`Transaction Hash for deposit: ${tx.hash}`);
+
+    // Format the notification message
+    const message = `
+      Transaction Hash: ${tx.hash}\n
+      From: ${tx.from}\n
+      To: ${tx.to}\n
+      Amount: ${amount} Wei ETH\n
+      Gas Fee: ${tx.gasPrice} Wei ETH\n
+      Block Number: ${tx.blockNumber}
+    `;
+
+    await sendNotification(message);
     console.log("Deposit transaction saved:", tx.hash);
   } catch (error) {
     console.error("Error processing transaction:", error);
