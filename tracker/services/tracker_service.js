@@ -65,7 +65,7 @@ const processTransaction = async (tx, pubkey) => {
       Transaction Hash: ${tx.hash}\n
       From: ${tx.from}\n
       To: ${tx.to}\n
-      Amount: ${amount} Wei ETH\n
+      Amount: ${tx.value} Wei ETH\n
       Gas Fee: ${tx.gasPrice} Wei ETH\n
       Block Number: ${tx.blockNumber}
     `;
