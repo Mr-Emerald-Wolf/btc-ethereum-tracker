@@ -48,11 +48,13 @@ const startTracking = async (contractAddress) => {
 // Logic to process the transaction
 const processTransaction = async (tx, pubkey) => {
   try {
+
     // Example: Save the transaction to the database
     const newDeposit = new Deposit({
       hash: tx.hash,
       blockTimestamp: (await provider.getBlock(tx.blockNumber)).timestamp,
-      fee: Number(tx.value), // ethers.js BigNumbers need to be converted to string
+      fee: Number(tx.gasPrice), // ethers.js BigNumbers need to be converted to string
+      amount: Number(tx.value),
       blockNumber: tx.blockNumber,
       pubkey: pubkey,
     });

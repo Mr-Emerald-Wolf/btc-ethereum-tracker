@@ -34,7 +34,17 @@ services:
       - tracker
       - exporter
 
+  grafana:
+    build:
+      context: grafana
+      dockerfile: Dockerfile.grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+
 volumes:
   mongo_data: 
   prometheus_data:
-  
+  grafana-storage:  

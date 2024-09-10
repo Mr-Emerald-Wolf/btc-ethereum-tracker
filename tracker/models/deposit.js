@@ -4,6 +4,7 @@ const depositSchema = new mongoose.Schema({
   blockNumber: Number,
   blockTimestamp: Date,
   fee: Number,
+  amount: Number,
   hash: String,
   pubkey: String,
 });
