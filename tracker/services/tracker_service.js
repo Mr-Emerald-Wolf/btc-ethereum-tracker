@@ -12,10 +12,21 @@ const initTracker = (rpcUrl, contractAddress, abi) => {
 // Start tracking block transactions related to the deposit contract
 const startTracking = async (contractAddress) => {
   try {
-   
-        const block = await provider.getBlock(20716574);
+    depositContract.on(
+      "DepositEvent",
+      async (
+        pubkey,
+        withdrawal_credentials,
+        amount,
+        signature,
+        index,
+        event
+      ) => {
+        const blockNumber = event.blockNumber;
+        const block = await provider.getBlock(blockNumber);
+        const blockTimestamp = block.timestamp;
 
-        console.log(`Processing transactions in event ${20716574}`);
+        console.log(`Processing transactions in event ${event}`);
 
         for (const txHash of block.transactions) {
           // Check if the transaction interacts with the deposit contract
@@ -28,10 +39,20 @@ const startTracking = async (contractAddress) => {
             );
 
             // Process the transaction (you can define the actual logic for deposits)
-            await processTransaction(tx, "00");
+            await processTransaction(tx, pubkey);
           }
         }
-       
+        console.log("New Deposit Detected:");
+        console.log("Transaction Hash:", transactionHash);
+        console.log("Block Number:", blockNumber);
+        console.log(
+          "Timestamp:",
+          new Date(blockTimestamp * 1000).toLocaleString()
+        );
+        console.log("Deposit Index:", index);
+        console.log("Amount (in gwei):", amount);
+      }
+    );
   } catch (error) {
     console.error("Error tracking transactions:", error);
   }
@@ -43,14 +64,14 @@ const processTransaction = async (tx, pubkey) => {
     // Example: Save the transaction to the database
     const newDeposit = new Deposit({
       hash: tx.hash,
-      blockTimestamp: (await provider.getBlock(tx.blockNumber)).timestamp,
+      blockTimestamp: (await this.provider.getBlock(tx.blockNumber)).timestamp,
       fee: Number(tx.value), // ethers.js BigNumbers need to be converted to string
       blockNumber: tx.blockNumber,
       pubkey: pubkey,
     });
 
     await newDeposit.save();
-    await sendNotification("Deposit transaction saved: " + tx.hash);
+    await sendNotification(txHash)
     console.log("Deposit transaction saved:", tx.hash);
   } catch (error) {
     console.error("Error processing transaction:", error);
